@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "express": "^4.21.2",
+    "mineflayer": "^4.26.0",
+    "mineflayer-pathfinder": "^2.4.5",
+    "path": "^0.12.7"
+  },
+  "name": "minebot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
