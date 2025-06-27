@@ -41,17 +41,20 @@ function createBot() {
         log("Bot spawned and online");
         log("Bot position: " + bot.entity.position);
 
-        // continuous forward motion + sprint
         bot.setControlState("forward", true);
         bot.setControlState("sprint", true);
 
-        let angle = 0;
         setInterval(() => {
             if (!bot || !bot.entity) return;
-            angle += Math.PI / 3; // smooth circle
+            const angle = Math.random() * Math.PI * 2;
             bot.look(angle, 0, true);
-            bot.setControlState("jump", true); // keep jumping
-        }, 500);
+            bot.setControlState("jump", true);
+            setTimeout(() => bot.setControlState("jump", false), 200);
+        }, 5000);
+
+        setInterval(() => {
+            if (bot) bot.chat("/me still here 😴");
+        }, 5 * 60 * 1000);
     });
 
     bot.on("end", onBotEnd);
@@ -100,6 +103,7 @@ app.post("/start", (req, res) => {
         return res.status(400).json({ msg: "Host and username required" });
 
     [savedHost, savedPort] = host.split(":");
+    savedPort = savedPort || "25565";
     savedUsername = username;
 
     createBot();
