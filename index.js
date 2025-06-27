@@ -126,5 +126,5 @@ app.get("/status", (req, res) => res.json({ status: botStatus }));
 app.get("/", (req, res) =>
     res.sendFile(path.join(__dirname, "public/index.html"))
 );
-
-app.listen(2000, () => log("Server running on port 2000"));
+const PORT = process.env.PORT || 2000;
+app.listen(PORT, () => log(`Server running on port ${PORT}`));
