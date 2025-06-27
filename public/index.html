@@ -1,25 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minecraft Bot Control</title>
-</head>
-<body>
-  <h1>Minecraft Bot Control</h1>
-  <div>
-    <label>Server IP:</label>
-    <input type="text" id="server-ip" placeholder="Enter server IP">
-  </div>
-  <div>
-    <label>Username:</label>
-    <input type="text" id="username" placeholder="Enter username">
-  </div>
-  <button onclick="startBot()">Start Bot</button>
-  <button onclick="stopBot()">Stop Bot</button>
-  <p>Status: <span id="status">Offline</span></p>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Minecraft Bot Control</title>
+    </head>
+    <body>
+        <h1>Minecraft Bot Control</h1>
+        <div>
+            <label>Server IP:</label>
+            <input type="text" id="server-ip" placeholder="Enter server IP" />
+        </div>
+        <div>
+            <label>Username:</label>
+            <input type="text" id="username" placeholder="Enter username" />
+        </div>
+        <button onclick="startBot()">Start Bot</button>
+        <button onclick="stopBot()">Stop Bot</button>
+        <p>Status: <span id="status">Offline</span></p>
+        <p>Log: <span id="statusLog"></span></p>
 
-  <script
-  src="script.js"></script>
-</body>
+        <script src="script.js"></script>
+    </body>
 </html>

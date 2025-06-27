@@ -1,19 +1,34 @@
-    async function startBot() {
-      const serverIp = document.getElementById('server-ip').value;
-      const username = document.getElementById('username').value;
+async function startBot() {
+    const serverIp = document.getElementById("server-ip").value;
+    const username = document.getElementById("username").value;
 
-      const response = await fetch('/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ host: serverIp, username: username })
-      });
+    localStorage.setItem("server-ip", serverIp);
+    localStorage.setItem("username", username);
 
-      const data = await response.json();
-      document.getElementById('status').textContent = 'Online';
+    if (serverIp && username) {
+        try {
+            const res = await fetch("/start", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ host: serverIp, username })
+            });
+            document.getElementById("status").textContent = "Online";
+        } catch {
+            document.getElementById("statusLog").textContent = "Start failed";
+        }
     }
+}
 
-    async function stopBot() {
-      const response = await fetch('/stop', { method: 'POST' });
-      const data = await response.json();
-      document.getElementById('status').textContent = 'Offline';
+async function stopBot() {
+    try {
+        const res = await fetch("/stop", { method: "POST" });
+        document.getElementById("status").textContent = "Offline";
+    } catch {
+        document.getElementById("statusLog").textContent = "Stop failed";
     }
+}
+
+document.getElementById("server-ip").value =
+    localStorage.getItem("server-ip") || "example.com:11111";
+document.getElementById("username").value =
+    localStorage.getItem("username") || "NoName";

@@ -1,98 +1,130 @@
-const express = require('express');
-const mineflayer = require('mineflayer');
-const pathfinder = require('mineflayer-pathfinder').pathfinder;
-const { Movements, goals } = require('mineflayer-pathfinder');
+const express = require("express");
+const mineflayer = require("mineflayer");
 const path = require("path");
 
 const app = express();
-let bot;
-let botStatus = 'offline';
-let targetPlayer = null;
+let bot = null;
+let botStatus = "offline";
+let manualStop = false;
+let reconnectTimeout = null;
+
+let savedHost = null;
+let savedPort = null;
+let savedUsername = null;
 
 app.use(express.static("public"));
 app.use(express.json());
 
-app.post('/start', (req, res) => {
-  const { host, username } = req.body;
-
-  if (botStatus === 'online') {
-    return res.status(400).json({ message: 'Bot is already online' });
-  }
-
-  bot = mineflayer.createBot({
-    host: host.split(":")[0], 
-    port: host.split(":")[1], 
-    username: username 
-  });
-
-  bot.loadPlugin(pathfinder); // Enable pathfinding
-
-  bot.once('spawn', () => {
-    botStatus = 'online';
-    res.json({ message: 'Bot started successfully' });
-
-    // Make the bot jump continuously
-    setInterval(() => {
-      bot.setControlState('jump', true);
-      setTimeout(() => bot.setControlState('jump', false), 200);
-    }, 500);
-
-    // Listen to chat for setting the target player
-    bot.on('chat', (username, message) => {
-      if (message.startsWith("hunt ")) {
-        targetPlayer = message.split(" ")[1];
-        bot.chat(`Target set to: ${targetPlayer}. Hunting... 😈`);
-        startHunting();
-      }
-    });
-  });
-
-  bot.on('end', () => { botStatus = 'offline'; });
-  bot.on('error', () => { botStatus = 'offline'; });
-});
-
-function startHunting() {
-  if (!targetPlayer) return;
-  
-  const targetEntity = bot.players[targetPlayer]?.entity;
-  if (!targetEntity) {
-    bot.chat(`Cannot find player: ${targetPlayer}`);
-    return;
-  }
-
-  const mcData = require('minecraft-data')(bot.version);
-  const movements = new Movements(bot, mcData);
-  bot.pathfinder.setMovements(movements);
-  
-  const goal = new goals.GoalFollow(targetEntity, 1);
-  bot.pathfinder.setGoal(goal);
-
-  setInterval(() => {
-    if (targetEntity && bot.entity.position.distanceTo(targetEntity.position) < 3) {
-      bot.attack(targetEntity);
-    }
-  }, 1000);
+function log(m) {
+    console.log(m);
 }
 
-app.post('/stop', (req, res) => {
-  if (botStatus === 'offline') {
-    return res.status(400).json({ message: 'Bot is already offline' });
-  }
+function createBot() {
+    manualStop = false;
 
-  bot.quit();
-  botStatus = 'offline';
-  res.json({ message: 'Bot stopped successfully' });
+    bot = mineflayer.createBot({
+        host: savedHost,
+        port: parseInt(savedPort),
+        username: savedUsername,
+        version: "1.21.6"
+    });
+
+    bot.once("spawn", () => {
+        if (!bot.player || !bot.player.entity) {
+            log("Fake spawn detected — not in real world. Quitting.");
+            bot.quit();
+            botStatus = "offline";
+            return;
+        }
+
+        botStatus = "online";
+        log("Bot spawned and online");
+        log("Bot position: " + bot.entity.position);
+    });
+
+    bot.on("end", onBotEnd);
+    bot.on("error", onBotError);
+}
+
+function onBotEnd() {
+    log("Bot 'end' event");
+    if (manualStop) {
+        log("Manual stop — no reconnect");
+        return;
+    }
+    botStatus = "offline";
+    scheduleReconnect();
+}
+
+function onBotError(err) {
+    log("Bot 'error' event: " + err.message);
+    if (manualStop) {
+        log("Manual stop — no reconnect");
+        return;
+    }
+    botStatus = "offline";
+    scheduleReconnect();
+}
+
+function scheduleReconnect() {
+    if (manualStop) return;
+    if (reconnectTimeout) clearTimeout(reconnectTimeout);
+
+    log("Reconnect in 5 seconds...");
+    reconnectTimeout = setTimeout(() => {
+        if (botStatus === "offline" && !manualStop) {
+            log("Reconnecting now...");
+            createBot();
+        }
+    }, 5000);
+}
+
+app.post("/start", (req, res) => {
+    if (botStatus === "online")
+        return res.status(400).json({ msg: "Bot already online" });
+
+    const { host, username } = req.body;
+    if (!host || !username)
+        return res.status(400).json({ msg: "Host and username required" });
+
+    [savedHost, savedPort] = host.split(":");
+    savedUsername = username;
+
+    createBot();
+    res.json({ msg: "Bot starting" });
 });
 
-app.get('/status', (req, res) => {
-  res.json({ status: botStatus });
+app.post("/stop", (req, res) => {
+    if (botStatus === "offline")
+        return res.status(400).json({ msg: "Bot already offline" });
+
+    manualStop = true;
+
+    if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = null;
+    }
+
+    if (bot) {
+        bot.removeAllListeners("end");
+        bot.removeAllListeners("error");
+        try {
+            bot.quit();
+        } catch (e) {
+            log("Error quitting bot: " + e.message);
+        }
+        bot = null;
+    }
+
+    botStatus = "offline";
+    log("Bot stopped manually. Reconnect blocked.");
+    res.json({ msg: "Bot stopped" });
 });
 
-app.get("/", (req, res)=>{
-  res.sendFile(path.join(__dirname, "public/index.html"));
-});
+app.get("/status", (req, res) => res.json({ status: botStatus }));
 
-const port = 3000;
-app.listen(port, () => {
-  console.log(`Bot server running on port ${port}`);
-});
+app.get("/", (req, res) =>
+    res.sendFile(path.join(__dirname, "public/index.html"))
+);
+
+app.listen(2000, () => log("Server running on port 2000"));
