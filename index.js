@@ -48,7 +48,7 @@ function createBot() {
         let angle = 0;
         setInterval(() => {
             if (!bot || !bot.entity) return;
-            angle += Math.PI / 30; // smooth circle
+            angle += Math.PI / 3; // smooth circle
             bot.look(angle, 0, true);
             bot.setControlState("jump", true); // keep jumping
         }, 500);
