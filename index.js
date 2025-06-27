@@ -40,6 +40,18 @@ function createBot() {
         botStatus = "online";
         log("Bot spawned and online");
         log("Bot position: " + bot.entity.position);
+
+        // continuous forward motion + sprint
+        bot.setControlState("forward", true);
+        bot.setControlState("sprint", true);
+
+        let angle = 0;
+        setInterval(() => {
+            if (!bot || !bot.entity) return;
+            angle += Math.PI / 30; // smooth circle
+            bot.look(angle, 0, true);
+            bot.setControlState("jump", true); // keep jumping
+        }, 500);
     });
 
     bot.on("end", onBotEnd);
@@ -126,5 +138,8 @@ app.get("/status", (req, res) => res.json({ status: botStatus }));
 app.get("/", (req, res) =>
     res.sendFile(path.join(__dirname, "public/index.html"))
 );
+
 const PORT = process.env.PORT || 2000;
-app.listen(PORT, () => log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`Server Running ${PORT}`);
+});
