@@ -1,0 +1,196 @@
+[13:52:46] Creating bot with username: Tahsun on tahsun.aternos.me:11170
+[13:52:47] Bot setup complete
+[13:52:48] Bot 'error' event: read ECONNRESET
+[13:52:48] Reconnect in 5 seconds...
+[13:52:48] Bot 'end' event
+[13:52:48] Reconnect in 5 seconds...
+[13:52:53] Reconnecting now...
+[13:52:53] Creating bot with username: Tahsun on tahsun.aternos.me:11170
+[13:52:53] Bot setup complete
+[13:52:54] Bot logged in
+[13:52:55] Bot spawned and online at (1000.5, 53, 1000.5)
+[13:53:19] Chatted: Hi
+[13:53:24] Chatted: Sup
+[13:53:28] Chatting: sup
+[13:53:31] Bot stopped manually. Reconnect blocked.
+[13:55:17] Creating bot with username: Tahsun on tahsun.aternos.me:11170
+[13:55:18] Bot setup complete
+[13:55:20] Bot logged in
+[13:55:20] Bot spawned and online at (1000.5, 53, 1000.5)
+[13:55:24] Bot stopped manually. Reconnect blocked.
+[13:58:24] Creating bot with username: Tahsun on tahsun.aternos.me:11170
+[13:58:24] Bot setup complete
+[13:58:25] Bot 'error' event: read ECONNRESET
+[13:58:25] Reconnect in 5 seconds...
+[13:58:25] Bot 'end' event
+[13:58:25] Reconnect in 5 seconds...
+[13:58:30] Reconnecting now...
+[13:58:30] Creating bot with username: Tahsun on tahsun.aternos.me:11170
+[13:58:30] Bot setup complete
+[13:58:32] Bot logged in
+[13:58:32] Bot spawned and online at (1000.5, 53, 1000.5)
+[13:59:05] Chatting: sup
+[13:59:35] Chatting: bruh lag
+[14:00:09] Chatting: hey
+[14:00:43] Chatting: anyone alive?
+[14:01:09] Chatting: yo
+[14:01:39] Chatting: yo
+[14:02:05] Chatting: sup
+[14:02:31] Chatting: anyone alive?
+[14:03:04] Chatting: sup
+[14:03:24] Bot stopped manually. Reconnect blocked.
+[14:03:35] Creating bot with username: Tahsun on localhost:46677
+[14:03:35] Bot setup complete
+[14:03:35] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:03:35] Reconnect in 5 seconds...
+[14:03:35] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:03:35] Bot 'end' event
+[14:03:35] Reconnect in 5 seconds...
+[14:03:40] Reconnecting now...
+[14:03:40] Creating bot with username: Tahsun on localhost:46677
+[14:03:40] Bot setup complete
+[14:03:40] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:03:40] Reconnect in 5 seconds...
+[14:03:40] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:03:40] Bot 'end' event
+[14:03:40] Reconnect in 5 seconds...
+[14:03:45] Reconnecting now...
+[14:03:45] Creating bot with username: Tahsun on localhost:46677
+[14:03:45] Bot setup complete
+[14:03:45] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:03:45] Reconnect in 5 seconds...
+[14:03:45] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:03:45] Bot 'end' event
+[14:03:45] Reconnect in 5 seconds...
+[14:03:45] Creating bot with username: Tahsunislam on localhost:46677
+[14:03:46] Bot setup complete
+[14:03:46] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:03:46] Reconnect in 5 seconds...
+[14:03:46] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:03:46] Bot 'end' event
+[14:03:46] Reconnect in 5 seconds...
+[14:03:51] Reconnecting now...
+[14:03:51] Creating bot with username: Tahsunislam on localhost:46677
+[14:03:51] Bot setup complete
+[14:03:51] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:03:51] Reconnect in 5 seconds...
+[14:03:51] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:03:51] Bot 'end' event
+[14:03:51] Reconnect in 5 seconds...
+[14:03:56] Reconnecting now...
+[14:03:56] Creating bot with username: Tahsunislam on localhost:46677
+[14:03:56] Bot setup complete
+[14:03:56] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:03:56] Reconnect in 5 seconds...
+[14:03:56] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:03:56] Bot 'end' event
+[14:03:56] Reconnect in 5 seconds...
+[14:04:01] Reconnecting now...
+[14:04:01] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:01] Bot setup complete
+[14:04:01] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:01] Reconnect in 5 seconds...
+[14:04:01] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:01] Bot 'end' event
+[14:04:01] Reconnect in 5 seconds...
+[14:04:06] Reconnecting now...
+[14:04:06] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:06] Bot setup complete
+[14:04:06] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:06] Reconnect in 5 seconds...
+[14:04:06] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:06] Bot 'end' event
+[14:04:06] Reconnect in 5 seconds...
+[14:04:11] Reconnecting now...
+[14:04:11] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:11] Bot setup complete
+[14:04:11] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:11] Reconnect in 5 seconds...
+[14:04:11] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:11] Bot 'end' event
+[14:04:11] Reconnect in 5 seconds...
+[14:04:16] Reconnecting now...
+[14:04:16] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:16] Bot setup complete
+[14:04:16] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:16] Reconnect in 5 seconds...
+[14:04:16] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:16] Bot 'end' event
+[14:04:16] Reconnect in 5 seconds...
+[14:04:21] Reconnecting now...
+[14:04:21] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:21] Bot setup complete
+[14:04:21] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:21] Reconnect in 5 seconds...
+[14:04:21] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:21] Bot 'end' event
+[14:04:21] Reconnect in 5 seconds...
+[14:04:26] Reconnecting now...
+[14:04:26] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:26] Bot setup complete
+[14:04:26] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:26] Reconnect in 5 seconds...
+[14:04:26] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:26] Bot 'end' event
+[14:04:26] Reconnect in 5 seconds...
+[14:04:31] Reconnecting now...
+[14:04:31] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:31] Bot setup complete
+[14:04:31] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:31] Reconnect in 5 seconds...
+[14:04:31] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:31] Bot 'end' event
+[14:04:31] Reconnect in 5 seconds...
+[14:04:36] Reconnecting now...
+[14:04:36] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:36] Bot setup complete
+[14:04:36] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:36] Reconnect in 5 seconds...
+[14:04:36] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:36] Bot 'end' event
+[14:04:36] Reconnect in 5 seconds...
+[14:04:41] Reconnecting now...
+[14:04:41] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:41] Bot setup complete
+[14:04:41] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:41] Reconnect in 5 seconds...
+[14:04:41] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:41] Bot 'end' event
+[14:04:41] Reconnect in 5 seconds...
+[14:04:46] Reconnecting now...
+[14:04:46] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:46] Bot setup complete
+[14:04:46] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:46] Reconnect in 5 seconds...
+[14:04:46] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:46] Bot 'end' event
+[14:04:46] Reconnect in 5 seconds...
+[14:04:51] Reconnecting now...
+[14:04:51] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:51] Bot setup complete
+[14:04:51] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:51] Reconnect in 5 seconds...
+[14:04:51] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:51] Bot 'end' event
+[14:04:51] Reconnect in 5 seconds...
+[14:04:56] Reconnecting now...
+[14:04:56] Creating bot with username: Tahsunislam on localhost:46677
+[14:04:56] Bot setup complete
+[14:04:56] Bot 'error' event: This server is version 1.21.4, you are using version 1.21, please specify the correct version in the options.
+[14:04:56] Reconnect in 5 seconds...
+[14:04:56] Kicked from server. Reason: {"translate":"multiplayer.disconnect.incompatible","with":["1.21.4"]}
+[14:04:56] Bot 'end' event
+[14:04:56] Reconnect in 5 seconds...
+[14:04:58] Creating bot with username: Dream on tahsun.aternos.me:11170
+[14:04:59] Bot setup complete
+[14:05:01] Bot logged in
+[14:05:01] Bot spawned and online at (1000.5, 53, 1000.5)
+[14:05:28] Chatting: anyone alive?
+[14:06:03] Chatting: sup
+[14:06:31] Chatting: hey
+[14:06:59] Chatting: hey
+[14:07:32] Chatting: sup
+[14:07:58] Chatting: hey
+[14:08:29] Chatting: bruh lag
+[14:09:01] Chatting: gg
+[14:09:17] Bot stopped manually. Reconnect blocked.
