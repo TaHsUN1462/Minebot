@@ -1,6 +1,7 @@
 const express = require("express");
 const mineflayer = require("mineflayer");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 
@@ -15,7 +16,12 @@ let savedHost = null;
 let savedPort = null;
 let savedUsername = null;
 
+const LOG_FILE = "logs.txt";
 let logs = [];
+
+if (fs.existsSync(LOG_FILE)) {
+    logs = fs.readFileSync(LOG_FILE, "utf-8").split("\n").filter(Boolean);
+}
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -26,6 +32,7 @@ function log(m) {
     logs.push(entry);
     if (logs.length > 1000) logs.shift();
     console.log(entry);
+    fs.appendFileSync(LOG_FILE, entry + "\n");
 }
 
 app.get("/logs", (req, res) => {
@@ -41,10 +48,7 @@ function cleanup() {
 
 function createBot() {
     manualStop = false;
-
-    log(
-        `Creating bot with username: ${savedUsername} on ${savedHost}:${savedPort}`
-    );
+    log(`Creating bot with username: ${savedUsername} on ${savedHost}:${savedPort}`);
 
     bot = mineflayer.createBot({
         host: savedHost,
@@ -53,7 +57,6 @@ function createBot() {
         version: "1.21.6"
     });
 
-    // Remove buggy passenger event listener to prevent crash
     bot._client.removeAllListeners("entity_passengers");
 
     bot.on("login", () => log("Bot logged in"));
@@ -78,30 +81,23 @@ function createBot() {
             bot.look(yaw, pitch, true);
             if (Math.random() < 0.15) {
                 bot.setControlState("jump", true);
-                setTimeout(() => bot.setControlState("jump", false), 200);
+                setTimeout(() => {
+                    if (bot) bot.setControlState("jump", false);
+                }, 200);
             }
             if (Math.random() < 0.1) {
                 bot.setControlState("sneak", true);
-                setTimeout(
-                    () => bot.setControlState("sneak", false),
-                    500 + Math.random() * 1000
-                );
+                setTimeout(() => {
+                    if (bot) bot.setControlState("sneak", false);
+                }, 500 + Math.random() * 1000);
             }
         }, 2000);
 
-        const messages = [
-            "hey",
-            "yo",
-            "bruh lag",
-            "gg",
-            "anyone alive?",
-            "sup"
-        ];
+        const messages = ["hey", "yo", "bruh lag", "gg", "anyone alive?", "sup"];
         const delay = () => (25 + Math.random() * 10) * 1000;
         const chatLoop = () => {
             if (bot) {
-                const msg =
-                    messages[Math.floor(Math.random() * messages.length)];
+                const msg = messages[Math.floor(Math.random() * messages.length)];
                 log("Chatting: " + msg);
                 bot.chat(msg);
             }
@@ -110,10 +106,9 @@ function createBot() {
         chatTimeout = setTimeout(chatLoop, delay());
     });
 
-    bot.on("kicked", (reason, loggedIn) => {
+    bot.on("kicked", (reason) => {
         log(`Kicked from server. Reason: ${reason?.toString() || "unknown"}`);
-        if (reason && reason.toString().toLowerCase().includes("ban"))
-            manualStop = true;
+        if (reason && reason.toString().toLowerCase().includes("ban")) manualStop = true;
     });
 
     bot.on("end", () => {
@@ -138,12 +133,11 @@ function createBot() {
         scheduleReconnect();
     });
 
-    bot.on("death", () => {
-        log("Bot died");
-    });
+    bot.on("death", () => log("Bot died"));
+    bot.on("respawn", () => log("Bot respawned"));
 
     bot.on("chat", (username, message) => {
-        if (username === savedUsername) return; // skip own messages
+        if (username === savedUsername) return;
         log(`Chat message from ${username}: ${message}`);
     });
 
@@ -151,10 +145,6 @@ function createBot() {
         if (collector.username === savedUsername) {
             log(`Bot collected ${itemDrop.name || itemDrop.displayName}`);
         }
-    });
-
-    bot.on("respawn", () => {
-        log("Bot respawned");
     });
 
     log("Bot setup complete");
@@ -221,19 +211,15 @@ app.post("/command", (req, res) => {
         return res.status(400).json({ msg: "Bot offline" });
 
     const { command } = req.body;
-    if (!command || typeof command !== "string") {
+    if (!command || typeof command !== "string")
         return res.status(400).json({ msg: "Command is required" });
-    }
 
     try {
         bot.chat(`${command}`);
         log(`Chatted: ${command}`);
         res.json({ msg: `Chatted: ${command}` });
     } catch (e) {
-        res.status(500).json({
-            msg: "Failed to execute command",
-            error: e.message
-        });
+        res.status(500).json({ msg: "Failed to execute command", error: e.message });
     }
 });
 
