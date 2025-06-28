@@ -46,15 +46,37 @@ function createBot() {
 
         setInterval(() => {
             if (!bot || !bot.entity) return;
-            const angle = Math.random() * Math.PI * 2;
-            bot.look(angle, 0, true);
-            bot.setControlState("jump", true);
-            setTimeout(() => bot.setControlState("jump", false), 200);
-        }, 5000);
+            const yaw = Math.random() * Math.PI * 2;
+            const pitch = (Math.random() - 0.5) * 0.4;
+            bot.look(yaw, pitch, true);
+            if (Math.random() < 0.15) {
+                bot.setControlState("jump", true);
+                setTimeout(() => bot.setControlState("jump", false), 200);
+            }
+            if (Math.random() < 0.1) {
+                bot.setControlState("sneak", true);
+                setTimeout(
+                    () => bot.setControlState("sneak", false),
+                    500 + Math.random() * 1000
+                );
+            }
+        }, 2000);
 
-        setInterval(() => {
-            if (bot) bot.chat("/me still here 😴");
-        }, 5 * 60 * 1000);
+        const messages = [
+            "hey",
+            "yo",
+            "bruh lag",
+            "gg",
+            "anyone alive?",
+            "sup"
+        ];
+        const delay = () => (60 + Math.random() * 60) * 1000;
+        const chatLoop = () => {
+            if (bot)
+                bot.chat(messages[Math.floor(Math.random() * messages.length)]);
+            timer = setTimeout(chatLoop, delay());
+        };
+        let timer = setTimeout(chatLoop, delay());
     });
 
     bot.on("end", onBotEnd);
