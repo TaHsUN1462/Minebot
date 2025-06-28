@@ -38,6 +38,7 @@
             <label>Chat:</label>
             <input type="text" id="bot-command" placeholder="Chat anything" />
         </div>
+        <button onclick="clearLogs()">Clear Logs</button>
 
         <script>
             async function startBot() {
@@ -111,6 +112,12 @@
                     alert("Request failed: " + e.message);
                 }
             }
+            function clearLogs() {
+    fetch("/clear-logs", { method: "POST" })
+        .then(res => res.json())
+        .then(data => alert(data.msg))
+        .catch(err => alert("Error clearing logs"));
+}
             async function updateStatusFromServer() {
                 try {
                     const res = await fetch("/status");
