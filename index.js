@@ -30,7 +30,7 @@ function log(m) {
     const time = new Date().toISOString().slice(11, 19);
     const entry = `[${time}] ${m}`;
     logs.push(entry);
-    if (logs.length > 1000) logs.shift();
+    if (logs.length > 300) logs.shift();
     console.log(entry);
     fs.appendFileSync(LOG_FILE, entry + "\n");
 }
@@ -48,7 +48,9 @@ function cleanup() {
 
 function createBot() {
     manualStop = false;
-    log(`Creating bot with username: ${savedUsername} on ${savedHost}:${savedPort}`);
+    log(
+        `Creating bot with username: ${savedUsername} on ${savedHost}:${savedPort}`
+    );
 
     bot = mineflayer.createBot({
         host: savedHost,
@@ -87,17 +89,28 @@ function createBot() {
             }
             if (Math.random() < 0.1) {
                 bot.setControlState("sneak", true);
-                setTimeout(() => {
-                    if (bot) bot.setControlState("sneak", false);
-                }, 500 + Math.random() * 1000);
+                setTimeout(
+                    () => {
+                        if (bot) bot.setControlState("sneak", false);
+                    },
+                    500 + Math.random() * 1000
+                );
             }
         }, 2000);
 
-        const messages = ["hey", "yo", "bruh lag", "gg", "anyone alive?", "sup"];
-        const delay = () => (25 + Math.random() * 10) * 1000;
+        const messages = [
+            "hey",
+            "yo",
+            "bruh lag",
+            "gg",
+            "anyone alive?",
+            "sup"
+        ];
+        const delay = () => (60 + Math.random() * 10) * 1000;
         const chatLoop = () => {
             if (bot) {
-                const msg = messages[Math.floor(Math.random() * messages.length)];
+                const msg =
+                    messages[Math.floor(Math.random() * messages.length)];
                 log("Chatting: " + msg);
                 bot.chat(msg);
             }
@@ -106,9 +119,10 @@ function createBot() {
         chatTimeout = setTimeout(chatLoop, delay());
     });
 
-    bot.on("kicked", (reason) => {
+    bot.on("kicked", reason => {
         log(`Kicked from server. Reason: ${reason?.toString() || "unknown"}`);
-        if (reason && reason.toString().toLowerCase().includes("ban")) manualStop = true;
+        if (reason && reason.toString().toLowerCase().includes("ban"))
+            manualStop = true;
     });
 
     bot.on("end", () => {
@@ -219,7 +233,10 @@ app.post("/command", (req, res) => {
         log(`Chatted: ${command}`);
         res.json({ msg: `Chatted: ${command}` });
     } catch (e) {
-        res.status(500).json({ msg: "Failed to execute command", error: e.message });
+        res.status(500).json({
+            msg: "Failed to execute command",
+            error: e.message
+        });
     }
 });
 
