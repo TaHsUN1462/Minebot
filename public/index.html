@@ -4,42 +4,66 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Minecraft Bot Control</title>
-        <style>
-            #log {
-                white-space: pre-wrap;
-                background: #222;
-                color: #eee;
-                padding: 10px;
-                height: 300px;
-                overflow-y: auto;
-                font-family: monospace;
-                border-radius: 4px;
-                margin-top: 1rem;
-            }
-        </style>
+        <link rel="stylesheet" href="/style.css" type="text/css" media="all" />
     </head>
     <body>
         <h1>Minecraft Bot Control</h1>
-        <div>
+        <div class="row">
+            <input
+                class="controlInput"
+                type="text"
+                id="server-ip"
+                placeholder=" "
+            />
             <label>Server IP:</label>
-            <input type="text" id="server-ip" placeholder="Enter server IP" />
         </div>
-        <div>
+        <div class="row">
+            <input
+                class="controlInput"
+                type="text"
+                id="username"
+                placeholder=" "
+            />
             <label>Username:</label>
-            <input type="text" id="username" placeholder="Enter username" />
         </div>
-        <button onclick="startBot()" id="startBotBtn">Start Bot</button>
-        <button onclick="stopBot()" id="stopBotBtn">Stop Bot</button>
-        <p>Status: <span id="status">Offline</span></p>
+        <div class="row">
+            <button onclick="startBot()" id="startBotBtn">Start</button>
+            <button style="display: none" onclick="stopBot()" id="stopBotBtn">
+                Stop
+            </button>
+        </div>
+        <span id="status">Offline</span>
 
         <h2>Bot Logs</h2>
-        <div id="log"></div>
-        <div>
-            <label>Chat:</label>
-            <input type="text" id="bot-command" placeholder="Chat anything" />
+        <div class="logDiv">
+            <button onclick="clearLogs()">
+                <svg
+                    viewBox="0 0 48 48"
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="1.5em"
+                    width="1.5em"
+                >
+                    <path
+                        fill="currentColor"
+                        d="M15.45 32.55q.45.45 1.05.45.6 0 1.05-.45L24 26.1l6.5 6.5q.4.4 1.025.375.625-.025 1.025-.425.45-.45.45-1.05 0-.6-.45-1.05L26.1 24l6.5-6.5q.4-.4.375-1.025-.025-.625-.425-1.025Q32.1 15 31.5 15q-.6 0-1.05.45L24 21.9l-6.5-6.5q-.4-.4-1.025-.375-.625.025-1.025.425-.45.45-.45 1.05 0 .6.45 1.05L21.9 24l-6.5 6.5q-.4.4-.375 1.025.025.625.425 1.025ZM24 44q-4.25 0-7.9-1.525-3.65-1.525-6.35-4.225-2.7-2.7-4.225-6.35Q4 28.25 4 24q0-4.2 1.525-7.85Q7.05 12.5 9.75 9.8q2.7-2.7 6.35-4.25Q19.75 4 24 4q4.2 0 7.85 1.55Q35.5 7.1 38.2 9.8q2.7 2.7 4.25 6.35Q44 19.8 44 24q0 4.25-1.55 7.9-1.55 3.65-4.25 6.35-2.7 2.7-6.35 4.225Q28.2 44 24 44Z"
+                    />
+                </svg>
+            </button>
+            <div id="log"></div>
         </div>
-        <button onclick="clearLogs()">Clear Logs</button>
-
+        <div class="row">
+            <input type="text" id="bot-command" placeholder=" " />
+            <label>Chat Anything:</label>
+        </div>
+        <div class="dialog" id="dialogBox">
+            <p id="dialogMsg">Message</p>
+            <input id="promptInput" style="display: none" />
+            <div class="button-row" id="buttonRow">
+                <button id="cancelBtnD">Cancel</button>
+                <button id="okBtn">OK</button>
+            </div>
+        </div>
+        <div class="overlay" id="overlay"></div>
         <script src="script.js"></script>
     </body>
 </html>

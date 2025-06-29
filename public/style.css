@@ -1,0 +1,159 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap");
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: 200ms ease all;
+    font-family: "Rubik", Monospace;
+}
+#log {
+    width: 100%;
+    white-space: pre-wrap;
+    background: #222;
+    color: #eee;
+    padding: 10px;
+    padding-top: 20px;
+    height: 300px;
+    overflow-y: auto;
+    font-family: monospace;
+    border-radius: 4px;
+}
+body {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px;
+    gap: 30px;
+}
+.row {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.row label {
+    position: absolute;
+    top: 17px;
+    left: 10px;
+    pointer-events: none;
+    /* background: red; */
+}
+.row *:not(label) {
+    flex-grow: 1;
+    height: 100%;
+}
+.row input:focus + label,
+.row input:not(:placeholder-shown) + label {
+    left: 0px;
+    top: -25px;
+}
+input {
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    padding: 10px;
+}
+#status {
+    padding: 40px;
+    font-size: 1.3rem;
+    color: white;
+    font-weight: 800;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    user-select: none;
+}
+h1 {
+    white-space: nowrap;
+    margin-bottom: 30px;
+}
+.logDiv {
+    width: 100%;
+    position: relative;
+}
+.logDiv button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+    background: none;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f62451;
+}
+.dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 280px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    transform: translate(-50%, -50%) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 102;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+.dialog.shown {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+.dialog p {
+    font-size: 15px;
+    color: #3c3c4399;
+    margin: 20px;
+    white-space: pre-wrap;
+}
+.dialog input {
+    width: 85%;
+    margin: 10px auto 0;
+    padding: 10px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 99;
+    opacity: 0;
+    pointer-events: none;
+}
+.button-row {
+    display: flex;
+    border-top: 1px solid #ccc;
+}
+.button-row button {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 600;
+    padding: 14px 0;
+    background: #fff;
+    color: #007aff;
+    border: none;
+    border-radius: 10px;
+}
+.button-row button:first-child {
+    border-right: 1px solid #ccc;
+}
+.overlay.shown {
+    opacity: 1;
+    pointer-events: auto;
+}
+button {
+    background: #fff0e6;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    font-size: 1.2rem;
+}

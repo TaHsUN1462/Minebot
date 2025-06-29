@@ -1,1 +1,4 @@
-[07:01:03] Logs cleared by user
+[09:33:12] Logs cleared by user
+[09:33:16] Bot died
+[09:33:16] Bot respawned
+[09:33:20] Bot stopped manually. Reconnect blocked.

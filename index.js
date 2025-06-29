@@ -79,6 +79,11 @@ function createBot() {
 
         botStatus = "online";
         log("Bot spawned at " + bot.entity.position);
+
+        bot.on("chat", (username, message) => {
+            if (username === bot.username) return;
+            log(`<${username}> ${message}`);
+        });
     });
 
     bot.on("kicked", reason => {
