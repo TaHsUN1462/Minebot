@@ -113,7 +113,7 @@ async function getStatus() {
             if (data.status === "offline") {
                 document.getElementById("status").style.background = "#f62451";
                 document.getElementById("startBotBtn").style.display = "block";
-                document.getElementById("stopBotBtn").style.display = "none";
+                document.getElementById("stopBotBtn").style.display = "block";
             } else {
                 document.getElementById("status").style.background = "#1fd78d";
                 document.getElementById("startBotBtn").style.display = "none";

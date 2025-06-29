@@ -20,8 +20,7 @@ let logs = [];
 if (fs.existsSync(LOG_FILE)) {
     try {
         logs = fs.readFileSync(LOG_FILE, "utf-8").split("\n").filter(Boolean);
-    } catch (e) {
-        console.error("Log read error:", e.message);
+    } catch {
         logs = [];
     }
 }
@@ -36,12 +35,8 @@ function log(m) {
         logs.push(entry);
         if (logs.length > 300) logs.shift();
         console.log(entry);
-        fs.appendFile(LOG_FILE, entry + "\n", err => {
-            if (err) console.error("Log write error:", err.message);
-        });
-    } catch (e) {
-        console.error("Logging failed:", e.message);
-    }
+        fs.appendFile(LOG_FILE, entry + "\n", () => {});
+    } catch {}
 }
 
 function createBot() {
@@ -61,18 +56,12 @@ function createBot() {
         return;
     }
 
-    bot._client.removeAllListeners("entity_passengers");
-
     bot.on("login", () => log("Bot logged in"));
 
     bot.once("spawn", () => {
-        if (!bot?.player?.entity) {
-            log("Fake spawn — bot quitting.");
-            try {
-                bot.quit();
-            } catch (e) {
-                log("Error quitting bot after fake spawn: " + e.message);
-            }
+        if (!bot?.entity || !bot?.entity?.position) {
+            log("Invalid spawn — bot quitting.");
+            try { bot.quit(); } catch {}
             botStatus = "offline";
             return;
         }
@@ -91,9 +80,7 @@ function createBot() {
             const readable = JSON.stringify(reason);
             log("Kicked from server. Reason: " + readable);
             if (readable.toLowerCase().includes("ban")) manualStop = true;
-        } catch (e) {
-            log("Kick reason parse error: " + e.message);
-        }
+        } catch {}
     });
 
     bot.on("end", () => {
@@ -125,22 +112,20 @@ function createBot() {
 function scheduleReconnect() {
     if (manualStop) return;
     if (reconnectTimeout) clearTimeout(reconnectTimeout);
-    log("Reconnect in 5 seconds...");
+    log("Reconnect in 10 seconds...");
     reconnectTimeout = setTimeout(() => {
         if (botStatus === "offline" && !manualStop) {
             log("Reconnecting now...");
             createBot();
         }
-    }, 5000);
+    }, 10000);
 }
 
 app.post("/start", (req, res) => {
-    if (botStatus === "online")
-        return res.status(400).json({ msg: "Bot already online" });
+    if (botStatus === "online") return res.status(400).json({ msg: "Bot already online" });
 
     const { host, username } = req.body;
-    if (!host || !username)
-        return res.status(400).json({ msg: "Host and username required" });
+    if (!host || !username) return res.status(400).json({ msg: "Host and username required" });
 
     [savedHost, savedPort] = host.split(":");
     savedPort = savedPort || "25565";
@@ -156,8 +141,7 @@ app.post("/start", (req, res) => {
 });
 
 app.post("/stop", (req, res) => {
-    if (botStatus === "offline")
-        return res.status(400).json({ msg: "Bot already offline" });
+    if (botStatus === "offline") return res.status(400).json({ msg: "Bot already offline" });
 
     manualStop = true;
     if (reconnectTimeout) clearTimeout(reconnectTimeout);
@@ -179,16 +163,14 @@ app.post("/stop", (req, res) => {
 });
 
 app.post("/command", (req, res) => {
-    if (botStatus !== "online")
-        return res.status(400).json({ msg: "Bot offline" });
+    if (botStatus !== "online") return res.status(400).json({ msg: "Bot offline" });
 
     const { command } = req.body;
-    if (!command || typeof command !== "string")
-        return res.status(400).json({ msg: "Command is required" });
+    if (!command || typeof command !== "string") return res.status(400).json({ msg: "Command is required" });
 
     try {
         bot.chat(command);
-        log("Command executed: " + command);
+        log(`<${bot.username}> ${command}`);
         res.json({ msg: "Chatted: " + command });
     } catch (e) {
         log("Command error: " + e.message);
@@ -202,10 +184,7 @@ app.get("/status", (req, res) => {
 
 app.get("/logs", (req, res) => {
     try {
-        const fileLogs = fs
-            .readFileSync(LOG_FILE, "utf-8")
-            .split("\n")
-            .filter(Boolean);
+        const fileLogs = fs.readFileSync(LOG_FILE, "utf-8").split("\n").filter(Boolean);
         res.json({ logs: fileLogs });
     } catch (e) {
         log("Failed to read logs.txt: " + e.message);
@@ -239,13 +218,8 @@ app.use((err, req, res, next) => {
     res.status(500).send("Server error");
 });
 
-process.on("uncaughtException", err => {
-    log("Uncaught Exception: " + err.message);
-});
-
-process.on("unhandledRejection", err => {
-    log("Unhandled Rejection: " + (err?.message || err));
-});
+process.on("uncaughtException", err => log("Uncaught Exception: " + err.message));
+process.on("unhandledRejection", err => log("Unhandled Rejection: " + (err?.message || err)));
 
 const PORT = process.env.PORT || 2000;
 app.listen(PORT, () => {

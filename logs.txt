@@ -1,4 +1,12 @@
-[09:33:12] Logs cleared by user
-[09:33:16] Bot died
-[09:33:16] Bot respawned
-[09:33:20] Bot stopped manually. Reconnect blocked.
+[14:09:56] Logs cleared by user
+[14:09:57] Reconnecting now...
+[14:09:57] Creating bot with username: Daquavis on tahsun.aternos.me:11170
+[14:09:57] Bot setup complete
+[14:09:59] Bot logged in
+[14:09:59] Bot spawned at (607.5, 64, -133.5)
+[14:10:00] Uncaught Exception: Cannot read properties of undefined (reading 'passengers')
+[14:10:05] <Daquavis> Dga
+[18:26:13] Creating bot with username: DaquavisMC on tahsun.aternos.me:11170
+[18:26:13] Bot setup complete
+[18:26:15] Bot logged in
+[18:26:15] Bot spawned at (659.477150836964, 62, -51.7)
