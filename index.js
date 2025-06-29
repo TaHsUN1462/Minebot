@@ -9,8 +9,6 @@ let bot = null;
 let botStatus = "offline";
 let manualStop = false;
 let reconnectTimeout = null;
-let movementInterval = null;
-let chatTimeout = null;
 
 let savedHost = null;
 let savedPort = null;
@@ -46,29 +44,16 @@ function log(m) {
     }
 }
 
-function cleanup() {
-    try {
-        if (movementInterval) clearInterval(movementInterval);
-        if (chatTimeout) clearTimeout(chatTimeout);
-    } catch (e) {
-        log("Cleanup error: " + e.message);
-    }
-    movementInterval = null;
-    chatTimeout = null;
-}
-
 function createBot() {
     manualStop = false;
-    log(
-        `Creating bot with username: ${savedUsername} on ${savedHost}:${savedPort}`
-    );
+    log(`Creating bot with username: ${savedUsername} on ${savedHost}:${savedPort}`);
 
     try {
         bot = mineflayer.createBot({
             host: savedHost,
             port: parseInt(savedPort),
             username: savedUsername,
-            version: "1.21.6"
+            version: "1.20.6"
         });
     } catch (e) {
         log("Bot creation failed: " + e.message);
@@ -94,60 +79,6 @@ function createBot() {
 
         botStatus = "online";
         log("Bot spawned at " + bot.entity.position);
-
-        try {
-            bot.setControlState("forward", true);
-            bot.setControlState("sprint", true);
-        } catch (e) {
-            log("Control state error: " + e.message);
-        }
-
-        movementInterval = setInterval(() => {
-            try {
-                if (!bot?.entity) return;
-                const yaw = Math.random() * Math.PI * 2;
-                const pitch = (Math.random() - 0.5) * 0.4;
-                bot.look(yaw, pitch, true);
-                if (Math.random() < 0.15) {
-                    bot.setControlState("jump", true);
-                    setTimeout(() => bot?.setControlState("jump", false), 200);
-                }
-                if (Math.random() < 0.1) {
-                    bot.setControlState("sneak", true);
-                    setTimeout(
-                        () => bot?.setControlState("sneak", false),
-                        500 + Math.random() * 1000
-                    );
-                }
-            } catch (e) {
-                log("Movement interval error: " + e.message);
-            }
-        }, 2000);
-
-        const messages = [
-            "hey",
-            "yo",
-            "bruh lag",
-            "gg",
-            "anyone alive?",
-            "sup"
-        ];
-        const delay = () => (60 + Math.random() * 10) * 1000;
-
-        const chatLoop = () => {
-            try {
-                if (!bot) return;
-                const msg =
-                    messages[Math.floor(Math.random() * messages.length)];
-                bot.chat(msg);
-                log("Chatting: " + msg);
-                chatTimeout = setTimeout(chatLoop, delay());
-            } catch (e) {
-                log("Chat loop error: " + e.message);
-            }
-        };
-
-        chatTimeout = setTimeout(chatLoop, delay());
     });
 
     bot.on("kicked", reason => {
@@ -162,7 +93,6 @@ function createBot() {
 
     bot.on("end", () => {
         log("Bot 'end' event");
-        cleanup();
         if (manualStop) {
             log("Manual stop — no reconnect");
             return;
@@ -173,7 +103,6 @@ function createBot() {
 
     bot.on("error", err => {
         log("Bot 'error' event: " + err.message);
-        cleanup();
         if (manualStop) {
             log("Manual stop — no reconnect");
             return;
@@ -184,18 +113,6 @@ function createBot() {
 
     bot.on("death", () => log("Bot died"));
     bot.on("respawn", () => log("Bot respawned"));
-
-    bot.on("chat", (username, message) => {
-        if (username !== savedUsername) {
-            log(`Chat from ${username}: ${message}`);
-        }
-    });
-
-    bot.on("playerCollect", (collector, itemDrop) => {
-        if (collector.username === savedUsername) {
-            log(`Collected item: ${itemDrop.name || itemDrop.displayName}`);
-        }
-    });
 
     log("Bot setup complete");
 }
@@ -240,8 +157,6 @@ app.post("/stop", (req, res) => {
     manualStop = true;
     if (reconnectTimeout) clearTimeout(reconnectTimeout);
     reconnectTimeout = null;
-
-    cleanup();
 
     try {
         if (bot) {
