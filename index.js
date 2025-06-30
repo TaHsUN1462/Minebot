@@ -218,7 +218,13 @@ app.use((err, req, res, next) => {
     res.status(500).send("Server error");
 });
 
-process.on("uncaughtException", err => log("Uncaught Exception: " + err.message));
+process.on("uncaughtException", err => {
+    if (err?.message?.includes("passengers")) {
+        log("Ignored buggy passenger error");
+        return;
+    }
+    log("Uncaught Exception: " + err.message);
+});
 process.on("unhandledRejection", err => log("Unhandled Rejection: " + (err?.message || err)));
 
 const PORT = process.env.PORT || 2000;
