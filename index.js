@@ -9,6 +9,7 @@ let bot = null;
 let botStatus = "offline";
 let manualStop = false;
 let reconnectTimeout = null;
+let clickInterval = null;
 
 let savedHost = null;
 let savedPort = null;
@@ -73,6 +74,15 @@ function createBot() {
             if (username === bot.username) return;
             log(`<${username}> ${message}`);
         });
+
+        if (clickInterval) clearInterval(clickInterval);
+        clickInterval = setInterval(() => {
+            if (!bot?.entity) return;
+            try {
+                bot.activateItem();
+                setTimeout(() => bot.deactivateItem(), 100);
+            } catch {}
+        }, 1000);
     });
 
     bot.on("kicked", reason => {
@@ -85,6 +95,10 @@ function createBot() {
 
     bot.on("end", () => {
         log("Bot 'end' event");
+        if (clickInterval) {
+            clearInterval(clickInterval);
+            clickInterval = null;
+        }
         if (manualStop) {
             log("Manual stop — no reconnect");
             return;
@@ -95,6 +109,10 @@ function createBot() {
 
     bot.on("error", err => {
         log("Bot 'error' event: " + err.message);
+        if (clickInterval) {
+            clearInterval(clickInterval);
+            clickInterval = null;
+        }
         if (manualStop) {
             log("Manual stop — no reconnect");
             return;
@@ -146,6 +164,11 @@ app.post("/stop", (req, res) => {
     manualStop = true;
     if (reconnectTimeout) clearTimeout(reconnectTimeout);
     reconnectTimeout = null;
+
+    if (clickInterval) {
+        clearInterval(clickInterval);
+        clickInterval = null;
+    }
 
     try {
         if (bot) {
