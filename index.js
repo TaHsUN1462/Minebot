@@ -2,18 +2,24 @@ const express = require("express");
 const mineflayer = require("mineflayer");
 const path = require("path");
 const fs = require("fs");
+const http = require("http");
+const WebSocket = require("ws");
 
 const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
 let bot = null;
 let botStatus = "offline";
 let manualStop = false;
 let reconnectTimeout = null;
 let clickInterval = null;
+let pardonInterval = null;
 
 let savedHost = null;
 let savedPort = null;
 let savedUsername = null;
+let savedOtherBot = null;
 
 const LOG_FILE = "logs.txt";
 let logs = [];
@@ -40,9 +46,20 @@ function log(m) {
     } catch {}
 }
 
+function broadcastPosition() {
+    if (!bot?.entity) return;
+    const { x, y, z } = bot.entity.position;
+    const pos = JSON.stringify({ x, y, z });
+    wss.clients.forEach(ws => {
+        if (ws.readyState === WebSocket.OPEN) ws.send(pos);
+    });
+}
+
 function createBot() {
     manualStop = false;
-    log(`Creating bot with username: ${savedUsername} on ${savedHost}:${savedPort}`);
+    log(
+        `Creating bot with username: ${savedUsername} on ${savedHost}:${savedPort}`
+    );
 
     try {
         bot = mineflayer.createBot({
@@ -62,27 +79,31 @@ function createBot() {
     bot.once("spawn", () => {
         if (!bot?.entity || !bot?.entity?.position) {
             log("Invalid spawn — bot quitting.");
-            try { bot.quit(); } catch {}
+            try {
+                bot.quit();
+            } catch {}
             botStatus = "offline";
             return;
         }
 
         botStatus = "online";
         log("Bot spawned at " + bot.entity.position);
+        setInterval(broadcastPosition, 50);
+
+        if (savedOtherBot) {
+            if (pardonInterval) clearInterval(pardonInterval);
+            pardonInterval = setInterval(() => {
+                if (bot && botStatus === "online") {
+                    bot.chat(`pardon ${savedOtherBot}`);
+                    log(`<${bot.username}> pardon ${savedOtherBot}`);
+                }
+            }, 60000);
+        }
 
         bot.on("chat", (username, message) => {
             if (username === bot.username) return;
             log(`<${username}> ${message}`);
         });
-
-        if (clickInterval) clearInterval(clickInterval);
-        clickInterval = setInterval(() => {
-            if (!bot?.entity) return;
-            try {
-                bot.activateItem();
-                setTimeout(() => bot.deactivateItem(), 100);
-            } catch {}
-        }, 1000);
     });
 
     bot.on("kicked", reason => {
@@ -95,10 +116,10 @@ function createBot() {
 
     bot.on("end", () => {
         log("Bot 'end' event");
-        if (clickInterval) {
-            clearInterval(clickInterval);
-            clickInterval = null;
-        }
+        if (clickInterval) clearInterval(clickInterval);
+        if (pardonInterval) clearInterval(pardonInterval);
+        clickInterval = null;
+        pardonInterval = null;
         if (manualStop) {
             log("Manual stop — no reconnect");
             return;
@@ -109,10 +130,10 @@ function createBot() {
 
     bot.on("error", err => {
         log("Bot 'error' event: " + err.message);
-        if (clickInterval) {
-            clearInterval(clickInterval);
-            clickInterval = null;
-        }
+        if (clickInterval) clearInterval(clickInterval);
+        if (pardonInterval) clearInterval(pardonInterval);
+        clickInterval = null;
+        pardonInterval = null;
         if (manualStop) {
             log("Manual stop — no reconnect");
             return;
@@ -123,7 +144,6 @@ function createBot() {
 
     bot.on("death", () => log("Bot died"));
     bot.on("respawn", () => log("Bot respawned"));
-
     log("Bot setup complete");
 }
 
@@ -139,15 +159,22 @@ function scheduleReconnect() {
     }, 10000);
 }
 
-app.post("/start", (req, res) => {
-    if (botStatus === "online") return res.status(400).json({ msg: "Bot already online" });
+app.get("/controls", (req, res) => {
+    res.sendFile(path.join(__dirname, "public/control.html"));
+});
 
-    const { host, username } = req.body;
-    if (!host || !username) return res.status(400).json({ msg: "Host and username required" });
+app.post("/start", (req, res) => {
+    if (botStatus === "online")
+        return res.status(400).json({ msg: "Bot already online" });
+
+    const { host, username, otherBot } = req.body;
+    if (!host || !username)
+        return res.status(400).json({ msg: "Host and username required" });
 
     [savedHost, savedPort] = host.split(":");
     savedPort = savedPort || "25565";
     savedUsername = username;
+    savedOtherBot = otherBot || null;
 
     try {
         createBot();
@@ -159,16 +186,17 @@ app.post("/start", (req, res) => {
 });
 
 app.post("/stop", (req, res) => {
-    if (botStatus === "offline") return res.status(400).json({ msg: "Bot already offline" });
+    if (botStatus === "offline")
+        return res.status(400).json({ msg: "Bot already offline" });
 
     manualStop = true;
     if (reconnectTimeout) clearTimeout(reconnectTimeout);
     reconnectTimeout = null;
 
-    if (clickInterval) {
-        clearInterval(clickInterval);
-        clickInterval = null;
-    }
+    if (clickInterval) clearInterval(clickInterval);
+    if (pardonInterval) clearInterval(pardonInterval);
+    clickInterval = null;
+    pardonInterval = null;
 
     try {
         if (bot) {
@@ -186,10 +214,12 @@ app.post("/stop", (req, res) => {
 });
 
 app.post("/command", (req, res) => {
-    if (botStatus !== "online") return res.status(400).json({ msg: "Bot offline" });
+    if (botStatus !== "online")
+        return res.status(400).json({ msg: "Bot offline" });
 
     const { command } = req.body;
-    if (!command || typeof command !== "string") return res.status(400).json({ msg: "Command is required" });
+    if (!command || typeof command !== "string")
+        return res.status(400).json({ msg: "Command is required" });
 
     try {
         bot.chat(command);
@@ -201,13 +231,42 @@ app.post("/command", (req, res) => {
     }
 });
 
+app.post("/control", (req, res) => {
+    if (!bot || botStatus !== "online") return res.sendStatus(400);
+    const { action, state } = req.body;
+    try {
+        switch (action) {
+            case "forward":
+            case "back":
+            case "left":
+            case "right":
+            case "jump":
+            case "sneak":
+                bot.setControlState(action, state);
+                break;
+            case "left_click":
+                if (state) bot.attack(bot.nearestEntity());
+                break;
+            case "right_click":
+                state ? bot.activateItem() : bot.deactivateItem();
+                break;
+        }
+        res.sendStatus(200);
+    } catch {
+        res.sendStatus(500);
+    }
+});
+
 app.get("/status", (req, res) => {
     res.json({ status: botStatus });
 });
 
 app.get("/logs", (req, res) => {
     try {
-        const fileLogs = fs.readFileSync(LOG_FILE, "utf-8").split("\n").filter(Boolean);
+        const fileLogs = fs
+            .readFileSync(LOG_FILE, "utf-8")
+            .split("\n")
+            .filter(Boolean);
         res.json({ logs: fileLogs });
     } catch (e) {
         log("Failed to read logs.txt: " + e.message);
@@ -227,30 +286,5 @@ app.post("/clear-logs", (req, res) => {
     }
 });
 
-app.get("/", (req, res) => {
-    try {
-        res.sendFile(path.join(__dirname, "public/index.html"));
-    } catch (e) {
-        log("Index error: " + e.message);
-        res.status(500).send("UI failed to load");
-    }
-});
-
-app.use((err, req, res, next) => {
-    log("Express error: " + err.message);
-    res.status(500).send("Server error");
-});
-
-process.on("uncaughtException", err => {
-    if (err?.message?.includes("passengers")) {
-        log("Ignored buggy passenger error");
-        return;
-    }
-    log("Uncaught Exception: " + err.message);
-});
-process.on("unhandledRejection", err => log("Unhandled Rejection: " + (err?.message || err)));
-
 const PORT = process.env.PORT || 2000;
-app.listen(PORT, () => {
-    console.log(`Server Running ${PORT}`);
-});
+server.listen(PORT, () => console.log("Server running on " + PORT));

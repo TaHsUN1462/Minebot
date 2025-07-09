@@ -27,9 +27,23 @@
             <label>Username:</label>
         </div>
         <div class="row">
-            <button onclick="startBot()" id="startBotBtn">Start </button>
+            <input
+                class="controlInput"
+                type="text"
+                id="otherBot"
+                placeholder=" "
+            />
+            <label>OtherBot:</label>
+        </div>
+        <div class="row">
+            <button onclick="startBot()" id="startBotBtn">Start</button>
             <button style="display: none" onclick="stopBot()" id="stopBotBtn">
                 Stop
+            </button>
+        </div>
+        <div class="row">
+            <button onclick="window.location.href='/controls'" id="startBotBtn">
+                Control Bot
             </button>
         </div>
         <span id="status">Offline</span>
@@ -64,6 +78,130 @@
             </div>
         </div>
         <div class="overlay" id="overlay"></div>
-        <script src="script.js"></script>
+        <script>
+  async function startBot() {
+    const serverIp = document.getElementById("server-ip").value;
+    const username = document.getElementById("username").value;
+    const otherBot = document.getElementById("otherBot").value;
+
+    localStorage.setItem("server-ip", serverIp);
+    localStorage.setItem("username", username);
+    localStorage.setItem("otherBot", otherBot);
+
+    if (serverIp && username) {
+      try {
+        const res = await fetch("/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ host: serverIp, username, otherBot })
+        });
+        if (!res.ok) throw new Error("Start failed");
+        document.getElementById("statusLog").textContent = "";
+      } catch {
+        document.getElementById("statusLog").textContent = "Start failed";
+      }
+    }
+  }
+
+  async function stopBot() {
+    try {
+      const res = await fetch("/stop", { method: "POST" });
+      if (!res.ok) throw new Error("Stop failed");
+      document.getElementById("statusLog").textContent = "";
+    } catch {
+      document.getElementById("statusLog").textContent = "Stop failed";
+    }
+  }
+
+  async function fetchLogs() {
+    try {
+      const res = await fetch("/logs");
+      const data = await res.json();
+      const logDiv = document.getElementById("log");
+      logDiv.textContent = data.logs.join("\n");
+      logDiv.scrollTop = logDiv.scrollHeight;
+    } catch {}
+  }
+
+  async function sendCommand() {
+    const commandInput = document.getElementById("bot-command");
+    const command = commandInput.value.trim();
+    if (!command) return alert("Enter a command");
+    try {
+      const res = await fetch("/command", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command })
+      });
+      const data = await res.json();
+      if (res.ok) commandInput.value = "";
+      else alert("Error: " + data.msg);
+    } catch (e) {
+      alert("Request failed: " + e.message);
+    }
+  }
+
+  async function updateStatusFromServer() {
+    try {
+      const res = await fetch("/status");
+      const data = await res.json();
+      document.getElementById("status").textContent =
+        data.status.charAt(0).toUpperCase() + data.status.slice(1);
+      getStatus();
+    } catch {
+      document.getElementById("status").textContent = "Offline";
+    }
+  }
+
+  function clearLogs() {
+    if (confirm("Clear all logs?")) {
+      fetch("/clear-logs", { method: "POST" })
+        .then(res => res.json())
+        .then(data => alert(data.msg))
+        .catch(err => alert("Error clearing logs"));
+    }
+  }
+
+  function getStatus() {
+    fetch("/status")
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "offline") {
+          document.getElementById("status").style.background = "#f62451";
+          document.getElementById("startBotBtn").style.display = "block";
+          document.getElementById("stopBotBtn").style.display = "block";
+        } else {
+          document.getElementById("status").style.background = "#1fd78d";
+          document.getElementById("startBotBtn").style.display = "none";
+          document.getElementById("stopBotBtn").style.display = "block";
+        }
+      })
+      .catch(console.error);
+  }
+
+  document.getElementById("bot-command").addEventListener("keydown", e => {
+    if (e.key === "Enter") sendCommand();
+  });
+
+  setInterval(fetchLogs, 1000);
+  setInterval(updateStatusFromServer, 2000);
+  fetchLogs();
+  updateStatusFromServer();
+
+  document.getElementById("server-ip").value =
+    localStorage.getItem("server-ip") || "example.com:25565";
+  document.getElementById("username").value =
+    localStorage.getItem("username") || "NoName";
+  document.getElementById("otherBot").value =
+    localStorage.getItem("otherBot") || "";
+
+  document.querySelectorAll(".controlInput").forEach(input => {
+    input.addEventListener("change", () => {
+      localStorage.setItem("server-ip", document.getElementById("server-ip").value);
+      localStorage.setItem("username", document.getElementById("username").value);
+      localStorage.setItem("otherBot", document.getElementById("otherBot").value);
+    });
+  });
+</script>
     </body>
 </html>
